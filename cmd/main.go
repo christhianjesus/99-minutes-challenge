@@ -1,12 +1,12 @@
-package minuts
+package main
 
 import (
 	"fmt"
-	"interview/config"
-	"interview/constants"
-	"interview/handlers"
-	"interview/middleware"
-	"interview/repositories"
+	"interview/cmd/config"
+	"interview/domain/constants"
+	"interview/internal/handlers"
+	"interview/internal/middleware"
+	"interview/internal/repositories"
 
 	"github.com/joeshaw/envdecode"
 	"github.com/labstack/echo/v4"

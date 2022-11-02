@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"context"
-	"interview/entities"
+	"interview/domain/entities"
 )
 
 type OrdersRepository interface {

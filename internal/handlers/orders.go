@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"interview/constants"
-	"interview/entities"
-	"interview/repositories"
+	"interview/domain/constants"
+	"interview/domain/entities"
+	"interview/internal/repositories"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
