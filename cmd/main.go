@@ -38,10 +38,9 @@ func main() {
 	}
 
 	setupHandlers(&ServerInstances{
-		conf,
 		db,
-		mws,
 		router,
+		mws,
 	})
 
 	s.Logger.Debug(
@@ -50,10 +49,9 @@ func main() {
 }
 
 type ServerInstances struct {
-	conf   config.Config
 	db     *gorm.DB
-	mws    map[string]echo.MiddlewareFunc
 	router *echo.Group
+	mws    map[string]echo.MiddlewareFunc
 }
 
 func setupHandlers(i *ServerInstances) {

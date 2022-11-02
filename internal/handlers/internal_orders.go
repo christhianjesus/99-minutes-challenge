@@ -17,12 +17,13 @@ func NewInternalOrdersHandler(repository repositories.OrdersRepository) Handler 
 	return &InternalOrdersHandler{repository}
 }
 
-func (h *InternalOrdersHandler) RegisterRoutes(router *echo.Group, _ map[string]echo.MiddlewareFunc) {
-	router.GET(constants.InternalOrdersPath, h.List)
-	router.POST(constants.InternalOrdersPath, h.Create)
-	router.GET(constants.InternalOrderWithIDPath, h.Retrieve)
-	router.PUT(constants.InternalOrderWithIDPath, h.Update)
-	router.DELETE(constants.InternalOrderWithIDPath, h.Destroy)
+func (h *InternalOrdersHandler) RegisterRoutes(router *echo.Group, mws map[string]echo.MiddlewareFunc) {
+	internalRoutes := router.Group("/internal", mws[constants.Admin])
+	internalRoutes.GET(constants.OrdersPath, h.List)
+	internalRoutes.POST(constants.OrdersPath, h.Create)
+	internalRoutes.GET(constants.OrderWithIDPath, h.Retrieve)
+	internalRoutes.PUT(constants.OrderWithIDPath, h.Update)
+	internalRoutes.DELETE(constants.OrderWithIDPath, h.Destroy)
 }
 
 func (h *InternalOrdersHandler) List(c echo.Context) error {
