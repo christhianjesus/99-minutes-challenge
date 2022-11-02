@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"interview/constants"
-	"interview/entities"
-	"interview/repositories"
+	"interview/domain/constants"
+	"interview/domain/entities"
+	"interview/internal/repositories"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -17,12 +17,13 @@ func NewInternalOrdersHandler(repository repositories.OrdersRepository) Handler 
 	return &InternalOrdersHandler{repository}
 }
 
-func (h *InternalOrdersHandler) RegisterRoutes(router *echo.Group, _ map[string]echo.MiddlewareFunc) {
-	router.GET(constants.InternalOrdersPath, h.List)
-	router.POST(constants.InternalOrdersPath, h.Create)
-	router.GET(constants.InternalOrderWithIDPath, h.Retrieve)
-	router.PATCH(constants.InternalOrderWithIDPath, h.PartialUpdate)
-	router.DELETE(constants.InternalOrderWithIDPath, h.Destroy)
+func (h *InternalOrdersHandler) RegisterRoutes(router *echo.Group, mws map[string]echo.MiddlewareFunc) {
+	internalRoutes := router.Group("/internal", mws[constants.Admin])
+	internalRoutes.GET(constants.OrdersPath, h.List)
+	internalRoutes.POST(constants.OrdersPath, h.Create)
+	internalRoutes.GET(constants.OrderWithIDPath, h.Retrieve)
+	internalRoutes.PUT(constants.OrderWithIDPath, h.Update)
+	internalRoutes.DELETE(constants.OrderWithIDPath, h.Destroy)
 }
 
 func (h *InternalOrdersHandler) List(c echo.Context) error {
@@ -37,9 +38,9 @@ func (h *InternalOrdersHandler) List(c echo.Context) error {
 }
 
 func (h *InternalOrdersHandler) Create(c echo.Context) error {
-	var order entities.Order
-	if err := c.Bind(&order); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	order := &entities.Order{}
+	if err := c.Bind(order); err != nil {
+		return err
 	}
 
 	err := h.repository.Create(c.Request().Context(), order)
@@ -66,21 +67,23 @@ func (h *InternalOrdersHandler) Retrieve(c echo.Context) error {
 	return c.JSON(http.StatusOK, order)
 }
 
-func (h *InternalOrdersHandler) PartialUpdate(c echo.Context) error {
-	var id uint64
+func (h *InternalOrdersHandler) Update(c echo.Context) error {
+	var id uint
 
-	err := echo.PathParamsBinder(c).Uint64("id", &id).BindError()
+	err := echo.PathParamsBinder(c).Uint("id", &id).BindError()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadGateway, err.Error())
 	}
 
-	var order entities.Order
+	order := &entities.Order{}
 
-	if err := c.Bind(&order); err != nil {
-		return echo.NewHTTPError(http.StatusBadGateway, err.Error())
+	if err := c.Bind(order); err != nil {
+		return err
 	}
 
-	err = h.repository.PartialUpdate(c.Request().Context(), order)
+	order.ID = id
+
+	err = h.repository.Update(c.Request().Context(), order)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, err.Error())
 	}
