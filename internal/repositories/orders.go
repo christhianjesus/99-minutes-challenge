@@ -8,9 +8,9 @@ import (
 )
 
 type OrdersRepository interface {
-	List(context.Context) ([]entities.Order, error)
+	List(context.Context, *entities.Order) ([]entities.Order, error)
 	Create(context.Context, *entities.Order) error
-	Retrieve(context.Context, uint64) (*entities.Order, error)
+	Retrieve(context.Context, *entities.Order) error
 	Update(context.Context, *entities.Order) error
 	Destroy(context.Context, uint64) error
 }
@@ -25,9 +25,9 @@ func NewOrdersRepository(db *gorm.DB) OrdersRepository {
 	return &ordersRepository{db}
 }
 
-func (r *ordersRepository) List(ctx context.Context) ([]entities.Order, error) {
+func (r *ordersRepository) List(ctx context.Context, order *entities.Order) ([]entities.Order, error) {
 	orders := []entities.Order{}
-	if err := r.db.Find(&orders).Error; err != nil {
+	if err := r.db.Where(order).Find(&orders).Error; err != nil {
 		return nil, err
 	}
 
@@ -38,13 +38,8 @@ func (r *ordersRepository) Create(ctx context.Context, order *entities.Order) er
 	return r.db.Create(order).Error
 }
 
-func (r *ordersRepository) Retrieve(ctx context.Context, id uint64) (*entities.Order, error) {
-	order := &entities.Order{}
-	if err := r.db.First(order, id).Error; err != nil {
-		return nil, err
-	}
-
-	return order, nil
+func (r *ordersRepository) Retrieve(ctx context.Context, order *entities.Order) error {
+	return r.db.Where(order).First(order).Error
 }
 
 func (r *ordersRepository) Update(ctx context.Context, order *entities.Order) error {

@@ -13,6 +13,7 @@ type Coordinate struct {
 
 type Order struct {
 	gorm.Model
+	User     string `gorm:"index"`
 	Status   string
 	Quantity int
 	Weight   int
