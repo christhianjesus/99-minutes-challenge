@@ -1,6 +1,10 @@
 package constants
 
 const (
-	OrdersPath      string = "/orders"
-	OrderWithIDPath string = "/orders/:id"
+	OrdersPath         = "/orders"
+	OrderWithIDPath    = "/orders/:id"
+	DefaultOrderStatus = "creado"
+	CancelOrderStatus  = "cancelado"
 )
+
+var InvalidCancelStatus = []string{"en_ruta", "entregado"}
