@@ -17,4 +17,5 @@ type Order struct {
 	Status   string
 	Quantity int
 	Weight   int
+	Refund   bool
 }

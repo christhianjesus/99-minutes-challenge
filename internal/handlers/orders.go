@@ -6,6 +6,7 @@ import (
 	"interview/internal/repositories"
 	"interview/internal/utils"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -140,6 +141,7 @@ func (h *OrdersHandler) UserCreate(c echo.Context) error {
 
 	order.User = GetUserID(c)
 	order.Status = constants.DefaultOrderStatus
+	order.Rembolso = false
 
 	err := h.repository.Create(c.Request().Context(), order)
 	if err != nil {
@@ -194,6 +196,11 @@ func (h *OrdersHandler) CancelOrder(c echo.Context) error {
 	}
 
 	order.Status = constants.CancelOrderStatus
+
+	t := time.Now()
+	if elapsed := t.Sub(order.CreatedAt); elapsed <= time.Duration(120)*time.Second {
+		order.Refund = true
+	}
 
 	err = h.repository.Update(c.Request().Context(), order)
 	if err != nil {
